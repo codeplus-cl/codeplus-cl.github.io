@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initWhatsAppIntegration();
     initFooterInteractions();
     initBlogTopicSearch();
+    initMarkedJS();
 });
 
 // Navigation functionality
@@ -205,6 +206,7 @@ function setTheme(theme) {
         updateThemeIcon();
         updateNavbarLogo();
         updateActiveThemeOption(theme);
+        updateHighlightJSTheme(theme);
         
         // Remove loading state
         themeBtn.classList.remove('theme-loading');
@@ -216,6 +218,40 @@ function setTheme(theme) {
         }, 300);
         
     }, 100);
+}
+
+function updateHighlightJSTheme(theme) {
+    const lightTheme = document.getElementById('hljs-light-theme');
+    const darkTheme = document.getElementById('hljs-dark-theme');
+    
+    if (!lightTheme || !darkTheme) return;
+    
+    if (theme === 'dark') {
+        lightTheme.disabled = true;
+        darkTheme.disabled = false;
+    } else if (theme === 'light') {
+        lightTheme.disabled = false;
+        darkTheme.disabled = true;
+    } else {
+        // System theme - detect user preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+            lightTheme.disabled = true;
+            darkTheme.disabled = false;
+        } else {
+            lightTheme.disabled = false;
+            darkTheme.disabled = true;
+        }
+    }
+    
+    // Re-highlight all code blocks with the new theme
+    if (typeof hljs !== 'undefined') {
+        setTimeout(() => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }, 100);
+    }
 }
 
 function updateThemeIcon() {
@@ -1148,6 +1184,16 @@ function initializeTheme() {
             setTheme('system'); // Default to system preference
         }
     }
+    
+    // Listen for system theme changes
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'system') {
+                updateHighlightJSTheme('system');
+            }
+        });
+    }
 }
 
 // Add keyboard shortcuts for theme switching (accessibility)
@@ -1261,10 +1307,152 @@ function openBlogPost(postId) {
         loader.classList.remove('hide');
     }
     
-    // Simulate loading time
+    // Load markdown content
+    loadMarkdownPost(postId, modal, modalBody, loader);
+}
+
+function loadMarkdownPost(postId, modal, modalBody, loader) {
+    // Map post IDs to markdown files
+    const postFiles = {
+        'post-1': './blog/posts/post-1.md',
+        'post-2': './blog/posts/post-2.md',
+        'post-3': './blog/posts/post-3.md'
+    };
+    
+    const markdownFile = postFiles[postId];
+    
+    if (!markdownFile) {
+        showBlogError(modal, modalBody, loader, 'Post no encontrado');
+        return;
+    }
+    
+    // Fetch markdown content
+    fetch(markdownFile)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(markdownContent => {
+            // Parse markdown to HTML using Marked.js
+            let htmlContent = '';
+            
+            if (typeof marked !== 'undefined') {
+                htmlContent = marked.parse(markdownContent);
+            } else {
+                // Fallback if Marked.js is not loaded
+                htmlContent = `<pre>${markdownContent}</pre>`;
+            }
+            
+            // Create blog article structure
+            const articleHTML = `
+                <div class="blog-article">
+                    <button class="article-close-btn" onclick="closeBlogModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="article-content">
+                        ${htmlContent}
+                    </div>
+                    <div class="article-footer">
+                        <div class="article-share">
+                            <h4>Compartir este artículo:</h4>
+                            <div class="share-buttons">
+                                <button class="share-btn linkedin" onclick="shareOnLinkedIn('${postId}')">
+                                    <i class="fab fa-linkedin-in"></i>
+                                    LinkedIn
+                                </button>
+                                <button class="share-btn twitter" onclick="shareOnTwitter('${postId}')">
+                                    <i class="fab fa-twitter"></i>
+                                    Twitter
+                                </button>
+                                <button class="share-btn whatsapp" onclick="shareOnWhatsApp('${postId}')">
+                                    <i class="fab fa-whatsapp"></i>
+                                    WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                        <div class="article-cta">
+                            <p>¿Te resultó útil este artículo?</p>
+                            <a href="#contacto" class="btn-cta" onclick="closeBlogModal()">
+                                <i class="fas fa-envelope"></i>
+                                Contáctanos para más información
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Hide loader and show content
+            if (loader) {
+                loader.style.display = 'none';
+            }
+            
+            modalBody.innerHTML = articleHTML;
+            
+            // Apply syntax highlighting to code blocks
+            if (typeof hljs !== 'undefined') {
+                modalBody.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+            }
+            
+            // Add content loaded class for animations
+            setTimeout(() => {
+                modal.classList.add('content-loaded');
+            }, 100);
+            
+        })
+        .catch(error => {
+            console.error('Error loading blog post:', error);
+            showBlogError(modal, modalBody, loader, 'Error al cargar el artículo');
+        });
+}
+
+function showBlogError(modal, modalBody, loader, message) {
+    if (loader) {
+        loader.style.display = 'none';
+    }
+    
+    modalBody.innerHTML = `
+        <div class="blog-error">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Oops!</h3>
+            <p>${message}</p>
+            <button class="btn-secondary" onclick="closeBlogModal()">
+                <i class="fas fa-arrow-left"></i>
+                Volver al blog
+            </button>
+        </div>
+    `;
+    
     setTimeout(() => {
-        loadBlogContent(postId, modal, modalBody, loader);
-    }, 1000);
+        modal.classList.add('content-loaded');
+    }, 100);
+}
+
+// Social sharing functions
+function shareOnLinkedIn(postId) {
+    const url = `${window.location.origin}${window.location.pathname}#blog-${postId}`;
+    const text = 'Interesante artículo técnico de Code+ - Consultora Tecnológica';
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+}
+
+function shareOnTwitter(postId) {
+    const url = `${window.location.origin}${window.location.pathname}#blog-${postId}`;
+    const text = 'Interesante artículo técnico de @codeplus_cl';
+    const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+}
+
+function shareOnWhatsApp(postId) {
+    const url = `${window.location.origin}${window.location.pathname}#blog-${postId}`;
+    const text = `Interesante artículo técnico de Code+: ${url}`;
+    const shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank');
 }
 
 function loadBlogContent(postId, modal, modalBody, loader) {
@@ -1946,6 +2134,38 @@ function initKeyboardNavigation() {
         attributes: true,
         attributeFilter: ['class']
     });
+}
+
+// Initialize Marked.js configuration
+function initMarkedJS() {
+    if (typeof marked !== 'undefined') {
+        // Configure marked with highlight.js
+        marked.setOptions({
+            highlight: function(code, language) {
+                if (language && hljs.getLanguage(language)) {
+                    try {
+                        return hljs.highlight(code, {language: language}).value;
+                    } catch (err) {}
+                }
+                try {
+                    return hljs.highlightAuto(code).value;
+                } catch (err) {}
+                return code;
+            },
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            mangle: false,
+            sanitize: false,
+            silent: true,
+            xhtml: false
+        });
+        
+        // Initialize highlight.js
+        if (typeof hljs !== 'undefined') {
+            hljs.highlightAll();
+        }
+    }
 }
 
 // Enhanced debounce utility
