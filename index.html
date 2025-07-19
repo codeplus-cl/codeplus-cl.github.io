@@ -10,10 +10,22 @@
     <meta property="og:description" content="Soluciones tecnológicas especializadas para empresas: infraestructura en Cloud, automatización y soporte 24/7.">
     <meta property="og:url" content="https://codeplus.cl">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://codeplus.cl/assets/images/logo-social.png">
+    <meta property="og:image" content="https://codeplus.cl/assets/images/logo-large.svg">
+    <meta property="og:site_name" content="Code+">
+    <meta property="og:locale" content="es_CL">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Code+ - Consultora Tecnológica">
     <meta name="twitter:description" content="Soluciones tecnológicas especializadas para empresas: infraestructura en Cloud, automatización y soporte 24/7.">
+    <meta name="twitter:image" content="https://codeplus.cl/assets/images/logo-large.svg">
+    
+    <!-- Additional SEO tags for production -->
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <link rel="canonical" href="https://codeplus.cl">
+    <meta name="geo.region" content="CL">
+    <meta name="geo.placename" content="Chile">
+    <meta name="language" content="es">
+    <meta name="theme-color" content="#0066cc">
     
     <title>Code+ - Consultora Tecnológica | Soluciones Cloud y DevOps para Empresas</title>
     <link rel="icon" type="image/svg+xml" href="./assets/images/favicon.svg">
@@ -48,9 +60,11 @@
                 <li class="nav-item">
                     <a href="#servicios" class="nav-link">Servicios</a>
                 </li>
+                <!-- Blog temporalmente comentado hasta implementación completa
                 <li class="nav-item">
                     <a href="#blog" class="nav-link">Blog Técnico</a>
                 </li>
+                -->
                 <li class="nav-item">
                     <a href="#contacto" class="nav-link">Contacto</a>
                 </li>
@@ -325,7 +339,7 @@
         </div>
     </section>
 
-    <!-- Blog Section -->
+    <!-- Blog Section - Temporalmente comentado hasta implementación completa del sistema de blog
     <section id="blog" class="blog">
         <div class="container">
             <div class="section-header">
@@ -395,7 +409,7 @@
                     <div class="blog-post" data-post="post-1">
                         <div class="post-header">
                             <div class="post-meta">
-                                <span class="post-date">15 Jun 2025</span>
+                                <span class="post-date">En desarrollo</span>
                                 <span class="post-category">Cloud Computing</span>
                             </div>
                             <h3 class="post-title">Guía Completa: Migración a AWS sin Dolor de Cabeza</h3>
@@ -412,9 +426,10 @@
                             </span>
                         </div>
                         <div class="post-actions">
-                            <button class="btn-read-more" onclick="openBlogPost('post-1')">
+                            <!-- Temporalmente deshabilitado hasta implementar el sistema de blog completo -->
+                            <button class="btn-read-more" disabled style="opacity: 0.6; cursor: not-allowed;" title="Próximamente disponible">
                                 <i class="fas fa-arrow-right"></i>
-                                Leer Artículo
+                                Próximamente
                             </button>
                         </div>
                     </div>
@@ -422,7 +437,7 @@
                     <div class="blog-post" data-post="post-2">
                         <div class="post-header">
                             <div class="post-meta">
-                                <span class="post-date">22 Jun 2025</span>
+                                <span class="post-date">En desarrollo</span>
                                 <span class="post-category">DevOps Education</span>
                             </div>
                             <h3 class="post-title">CI/CD para Estudiantes: De Cero a Héroe en 30 Días</h3>
@@ -439,9 +454,10 @@
                             </span>
                         </div>
                         <div class="post-actions">
-                            <button class="btn-read-more" onclick="openBlogPost('post-2')">
+                            <!-- Temporalmente deshabilitado hasta implementar el sistema de blog completo -->
+                            <button class="btn-read-more" disabled style="opacity: 0.6; cursor: not-allowed;" title="Próximamente disponible">
                                 <i class="fas fa-arrow-right"></i>
-                                Leer Artículo
+                                Próximamente
                             </button>
                         </div>
                     </div>
@@ -449,7 +465,7 @@
                     <div class="blog-post" data-post="post-3">
                         <div class="post-header">
                             <div class="post-meta">
-                                <span class="post-date">28 Jun 2025</span>
+                                <span class="post-date">En desarrollo</span>
                                 <span class="post-category">Infrastructure as Code</span>
                             </div>
                             <h3 class="post-title">Terraform desde Cero: Infrastructure as Code para Empresas Chilenas</h3>
@@ -466,9 +482,10 @@
                             </span>
                         </div>
                         <div class="post-actions">
-                            <button class="btn-read-more" onclick="openBlogPost('post-3')">
+                            <!-- Temporalmente deshabilitado hasta implementar el sistema de blog completo -->
+                            <button class="btn-read-more" disabled style="opacity: 0.6; cursor: not-allowed;" title="Próximamente disponible">
                                 <i class="fas fa-arrow-right"></i>
-                                Leer Artículo
+                                Próximamente
                             </button>
                         </div>
                     </div>
@@ -480,6 +497,7 @@
             </div>
         </div>
     </section>
+    -->
 
     <!-- Contact Section -->
     <section id="contacto" class="contact">
@@ -521,7 +539,7 @@
                     </div>
                 </div>
                 <div class="contact-form-container">
-                    <form class="contact-form" id="contact-form">
+                    <form class="contact-form" id="contact-form" onsubmit="return handleContactForm(event)">
                         <div class="form-group">
                             <label for="name">Nombre completo</label>
                             <input type="text" id="name" name="name" required>
@@ -567,7 +585,9 @@
                         <li><a href="#inicio">Inicio</a></li>
                         <li><a href="#nosotros">Nosotros</a></li>
                         <li><a href="#servicios">Servicios</a></li>
+                        <!-- Blog temporalmente comentado
                         <li><a href="#blog">Blog Técnico</a></li>
+                        -->
                         <li><a href="#contacto">Contacto</a></li>
                     </ul>
                 </div>
@@ -624,7 +644,7 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- Blog Modal -->
+    <!-- Blog Modal - Temporalmente comentado hasta implementación completa
     <div class="blog-modal" id="blog-modal">
         <div class="blog-modal-content">
             <div class="blog-modal-loader" id="blog-modal-loader">
@@ -641,6 +661,7 @@
             </div>
         </div>
     </div>
+    -->
 
     <!-- Scripts -->
     <script src="./assets/js/main.js"></script>

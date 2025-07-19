@@ -1964,3 +1964,55 @@ function debounce(func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 }
+
+// Function to handle contact form submission (called from HTML)
+function handleContactForm(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // Get form data
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        company: formData.get('company'),
+        message: formData.get('message')
+    };
+
+    // Basic validation
+    if (!data.name || !data.email || !data.message) {
+        showNotification('Por favor, completa todos los campos obligatorios.', 'error');
+        return false;
+    }
+
+    if (!isValidEmail(data.email)) {
+        showNotification('Por favor, ingresa un correo electrónico válido.', 'error');
+        return false;
+    }
+
+    // Show loading state
+    const submitBtn = form.querySelector('.btn-submit');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    submitBtn.disabled = true;
+
+    // Temporary: Simulate form submission until backend is implemented
+    setTimeout(() => {
+        // Reset form
+        form.reset();
+        
+        // Restore button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        
+        // Show success message
+        showNotification('¡Gracias por tu mensaje! Te contactaremos pronto por LinkedIn o correo electrónico.', 'success');
+        
+        // Log data for development (remove in production)
+        console.log('Form data (development only):', data);
+        
+    }, 2000);
+
+    return false; // Prevent default form submission
+}
